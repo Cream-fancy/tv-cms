@@ -71,7 +71,7 @@ module.exports = {
       const url = this.baseObj.url + '?' + queryString;
       DEBUG && console.log(url);
       const res = await rss.send(url);
-      let data = rss[this.funcName](res.body);
+      let data = rss[this.funcName](res.body, true);
       resolve(data.vList.list);
     });
   },

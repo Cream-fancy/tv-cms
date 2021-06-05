@@ -17,6 +17,7 @@ module.exports = {
     return Object.keys(query).map((k) => `${k}=${encodeURIComponent(query[k])}`).join("&")
   },
   send(url) {
+    console.log(`访问如下链接： ${url}`);
     return new Promise(resolve => {
       request.get({
         url: url,
@@ -30,8 +31,50 @@ module.exports = {
       });
     })
   },
-  parseJson(json) {
+  /**
+   * 解析 JSON 数据
+   * @param {String} json 
+   * @param {boolean} isIds 
+   */
+  parseJson(json, isIds) {
     let obj = JSON.parse(json);
+    let vList;
+    if (isIds) {
+      let o = obj['list'][0];
+      let videolist = o.vod_play_url.split("#").map(s => {
+        s = s.split("$");
+        return {
+          label: s[0],
+          src: s[1]
+        };
+      });
+      vList = {
+        id: o.vod_id,
+        name: o.vod_name,
+        last: o.vod_time,
+        note: o.vod_remarks,
+        pic: o.vod_pic,
+        actor: o.vod_actor,
+        director: o.vod_director,
+        des: o.vod_content,
+        list: videolist
+      };
+    } else {
+      vList = obj['list'].map(o => {
+        return {
+          id: o.vod_id,
+          name: o.vod_name,
+          last: o.vod_time,
+          note: o.vod_remarks
+        }
+      });
+    }
+    return {
+      page: obj["page"],
+      pageCount: obj["pagecount"],
+      recordCount: obj["total"],
+      vList: vList
+    };
   },
   parseXml(xml) {
     let doc = JSON.parse(convert.xml2json(xml, { compact: true }));
