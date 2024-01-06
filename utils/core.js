@@ -1,6 +1,5 @@
 const rss = require('./rss');
 const cms = require('./cms');
-const DEBUG = false;
 
 module.exports = {
   baseObj: null,
@@ -49,7 +48,6 @@ module.exports = {
         p: page,
       });
       const url = this.baseObj.url + '?' + queryString;
-      DEBUG && console.log(url);
       const res = await rss.send(url);
       let data = rss[this.funcName](res.body);
       resolve(data);
@@ -69,10 +67,9 @@ module.exports = {
         page: page,
       });
       const url = this.baseObj.url + '?' + queryString;
-      DEBUG && console.log(url);
       const res = await rss.send(url);
       let data = rss[this.funcName](res.body, true);
-      resolve(data.vList.list);
+      resolve(data.vList);
     });
   },
 };
